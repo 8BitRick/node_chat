@@ -18,18 +18,47 @@
 <form action="">
     <input id="m" autocomplete="off" /><button>Send</button>
 </form>
-<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/web-socket-js/1.0.0/web_socket.js"></script>-->
+<!--<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>-->
 <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
 <script>
-    var socket = io();
+//    var WebSocket = require('ws');
+    var host = window.document.location.host.replace(/:.*/, '');
+    var ws = new WebSocket('ws://' + host + ':8080');
+    //var ws = new WebSocket('ws://ubuntu:3000/');
+
+    ws.onmessage = function(event) {
+        console.log(event.data);
+        $('#messages').append($('<li>').text(event.data));
+    };
+    ws.onopen = function(event) {
+        console.log("on open!");
+        ws.send("blah blah");
+    };
+
     $('form').submit(function(){
-        socket.emit('chat message', $('#m').val());
+        ws.send($('#m').val());
         $('#m').val('');
         return false;
     });
-    socket.on('chat message', function(msg){
-        $('#messages').append($('<li>').text(msg));
-    });
+
+//    ws.on('open', function() {
+//        ws.send('something');
+//    });
+
+//    ws.on('message', function(message) {
+//        console.log('received: %s', message);
+//    });
+
+//    var socket = io();
+//    $('form').submit(function(){
+//        socket.emit('chat message', $('#m').val());
+//        $('#m').val('');
+//        return false;
+//    });
+//    socket.on('chat message', function(msg){
+//        $('#messages').append($('<li>').text(msg));
+//    });
 </script>
 </body>
 </html>
